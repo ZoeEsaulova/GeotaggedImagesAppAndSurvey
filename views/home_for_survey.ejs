@@ -1,0 +1,746 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- jQuery -->
+    <script type="text/javascript" src="onlinefolio/layout/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="onlinefolio/layout/scripts/jquery.slidepanel.setup.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="javascripts/jquery.imgareaselect-0.9.10/css/imgareaselect-default.css" />
+    <!--bootstrap-->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link href="bootstrap-3.3.5/docs/examples/starter-template/starter-template.css" rel="stylesheet">
+    <link href="bootstrap-3.3.5/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <!-- Open Layers 3 -->
+    <link rel="stylesheet" href="v3.10.1/css/ol.css" type="text/css">
+    <script src="v3.10.1/build/ol.js" type="text/javascript"></script>
+    <!-- LayerSwitcher -->
+    <link rel="stylesheet" href="ol3-layerswitcher-master/src/ol3-layerswitcher.css" />
+    <link rel="stylesheet" href="ol3-layerswitcher-master/examples/layerswitcher.css" />
+    <script src="ol3-layerswitcher-master/src/ol3-layerswitcher.js"></script>
+    <script src="ol3-layerswitcher-master/examples/layerswitcher.js"></script>
+    <script src="ol3-layerswitcher-master/examples/addlayer.js"></script>
+    <title>Geotagged images</title>
+    <style type="text/css">
+      img {
+        width: 100%;
+        margin-top: 50px
+      }    
+      #map {
+        margin: 0;
+        margin-top: 50px;
+        z-index: 0;
+      } 
+      .col-lg-6 {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+      }
+      #nextImage1, #nextImage2 {
+        right: 40px;
+      }
+      .form-control {
+        white-space: nowrap;
+      }
+      .input {
+        width: 70px;
+        height: 35px; 
+        white-space: nowrap;
+        border-radius: 5px;
+        position: relative;
+        top: 3px;
+      }
+      button {
+        margin: 4px;
+        position: relative;
+        top: 50%;
+      }
+      #get {
+        margin-right: 1px;
+
+      }
+      #getObjects {
+
+      }
+      .well {
+        background: rgba(255,0,0,0.2);
+        margin: 0px;
+        padding: 10px;
+      }
+      #link {
+        color: blue;
+        text-decoration: underline;
+      }
+      .container {
+        margin: 0px;
+      }
+      .form-group {
+        text-align: center;;
+      }
+      .inputClass {
+        margin-top: 0px;
+        margin-left: 0px;
+      }
+      #form11 {
+        margin-top:5px;
+      }
+    </style>
+  </head>
+
+  <% if (showBuilding) { %>
+       <body onload="showBuildings('<%= buildingCoords %>','<%= properties %>', '<%= arrow %>', '0')">
+  <% } else { %>
+       <body onload="showMarker(<%= properties %>, 'arrow', '0', <%= fov %>)">
+  <% }%>
+      <!-- Modal -->
+      <div class="modal fade" id="modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Please evaluate the task you have just finished</h4>
+              <h5 class="modal-title">(you can answer in English or German)</h5>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" method="post" action="/test/next/<%= entryId %>" id="from11">
+                <fieldset>
+                  <div class="form-group">
+                    <label class="col-lg-4 control-label"></label>
+                    <div class="col-lg-1">      
+                        <label>
+                          Strongly disagree
+                        </label>             
+                    </div>
+                    <div class="col-lg-1">      
+                        <label>
+                          Disagree
+                        </label>             
+                    </div>
+                    <div class="col-lg-1">      
+                        <label>
+                          Neutral
+                        </label>             
+                    </div>
+                    <div class="col-lg-1">      
+                        <label>
+                          Agree
+                        </label>             
+                    </div>
+                    <div class="col-lg-1">      
+                        <label>
+                          Strongly agree
+                        </label>             
+                    </div>
+                  </div>
+                  <div class="form-group" style="background-color: rgba(240,244,243,1);">
+                    <label class="col-lg-4 control-label">The task was easy</label>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="easy" value="1" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="easy" value="2" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="easy" value="3" checked="" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="easy" value="4" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="easy" value="5" style="margin: 0px;">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-lg-4 control-label"> I was able to complete the task quickly</label>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="quickly" value="1" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="quickly" value="2" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="quickly" value="3" checked="" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="quickly" value="4" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="quickly" value="5" style="margin: 0px;">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" style="background-color: rgba(240,244,243,1);">
+                    <label class="col-lg-4 control-label">I felt comfortable making the task</label>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="comfortable" value="1" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="comfortable" value="2" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="comfortable" value="3" checked="" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="comfortable" value="4" style="margin: 0px;">
+                      </div>
+                    </div>
+                    <div class="col-lg-1">
+                      <div class="radio">
+                        <input class="inputClass" type="radio" name="comfortable" value="5" style="margin: 0px;">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label">What did you find to be difficult about this task?</label>
+                    <div class="col-lg-10">
+                      <textarea class="form-control" rows="3" id="difficult" name="whatDifficult"></textarea>
+                      <span class="help-block">(optional)</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label">What did you like about this task?</label>
+                    <div class="col-lg-10">
+                      <textarea class="form-control" rows="3" name="whatLike"></textarea>
+                      <span class="help-block">(optional)</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label">What didn't you like about the task?</label>
+                    <div class="col-lg-10">
+                      <textarea class="form-control" rows="3" name="whatDislike"></textarea>
+                      <span class="help-block">(optional)</span>
+                    </div>
+                  </div>
+                  <input value="<%= nextImage %>" id="nextImage1" name="nextImage" hidden>
+                  <input value="0" id="mapRotation1" name="mapRotation" hidden>
+                  <input value="0" id="demoClicked1" name="demoClicked" hidden>
+                  <input value="y" id="objectCoords1" name="objectCoords" style="width:15" hidden>
+                  <input value="y" id="objectCoordsMap1" name="objectCoordsMap" style="width:15" hidden>
+                  <input value="y" id="imageSize1" name="imageSize" style="width:15" hidden>
+                  <input value="y" id="markedObjectId1" name="markedObjectId" hidden>
+                  <input value="x" id="lat1" name="lat" hidden>
+                  <input value="x" id="lon1" name="lon" hidden>
+                  <input value="<%= test %>" name="test" hidden>
+                  <input value="" id="knownModal" name="known" hidden>
+                  <input value="0" id="cID1" name="time" hidden>
+                  <div class="form-group">
+                    <div class="col-lg-2 col-lg-offset-10">
+                    <% if (showBuilding) { %>
+                      <button type="submit" class="btn btn-primary pull-right" id="submitModal1">Submit and finish</button>
+                    <% } else { %>
+                      <button type="submit" class="btn btn-primary pull-right" id="submitModal2">Submit and proceed to Task 2</button>
+                    <% }%>            
+                    </div>
+                  </div>               
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Task <%= test %>: image <%= image %> from 10</a> 
+          <a class="navbar-brand" id="cID" hidden></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Image and instractions -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6">
+          <img id="myImg" alt="Test image" class="img-thumbnail" src=<%= imageSource %> />
+          <div style="padding-right: 5px; padding-left: 5px;">
+            <h3 style="color: red; margin: 5px;" id="heading1" hidden>Instruction&nbsp;<%= test %>: </h3>
+            <% if (test=="1") { %>
+              <div class="well" id="instructionWell" hidden>You can see a photo and a map. An icon on the map marks the place where the photo has been taken. Please try to define the direction the camera was pointing at when the photo was taken.<br>Use <b>Shift + Left Mouse Key</b> to rotate the map so that the icon points at the right direction.<br> You can switch between satellite view and map view and zoom in and out as you like. 
+              <a target="_blank" href="/survey/demo/<%= test %>" id="link" onclick="demo()" >Watch demo video</a>
+            </div>
+            <% } else if (test=="2"){ %>
+              <div class="well" id="instructionWell" hidden>The icon on the map marks the place where the photo has been taken. All buildings within the 300-m radius are highlighted. Please do the following:<br>1. Click one building <b>on the map</b> to select it. It must be a building that you can see in the photo.<br>2. After you have selected a building on the map, a bounding box appears on the image. Move and resize the bounding box to mark the selected building <b>on the photo</b>. If the bounding box disappears, you can draw it again.You can switch between satellite view and map view and zoom in and out as you like.
+              <a target="_blank" href="/survey/demo/<%= test %>" id="link" onclick="demo()" style="font-size:90%;">Watch demo video</a>
+              </div>
+            <% } %>
+            <form class="form-horizontal" method="post" action="/test/next/<%= entryId %>" enctype="multipart/form-data" id="nextForm">
+              <fieldset>
+                <input value="<%= nextImage %>" id="nextImage2" name="nextImage" hidden>
+                <input value="0" id="mapRotation2" name="mapRotation" hidden>
+                <input value="0" id="demoClicked2" name="demoClicked" hidden>
+                <input value="x" id="lat2" name="lat" hidden>
+                <input value="x" id="lon2" name="lon" hidden>
+                <input value="<%= test %>" id="test" name="test" hidden>
+                <input value="y" id="objectCoords2" name="objectCoords" style="width:15" hidden>
+                <input value="y" id="objectCoordsMap2" name="objectCoordsMap" style="width:15" hidden>
+                <input value="y" id="imageSize2" name="imageSize" style="width:15" hidden>
+                <input value="y" id="markedObjectId2" name="markedObjectId" hidden>
+                <input value="0" id="cID2" name="time" hidden>
+                <% if (modal) { %>
+                    <button id="next" type="button" class="btn btn-danger pull-right" onclick="submitImageAndModal(<%= properties %>)" style="visibility: hidden;" >Next image</button>
+                <% } else { %>
+                   <button id="next" type="button" class="btn btn-danger pull-right" onclick="submitImage(<%= properties %>)" style="visibility: hidden;" >Next image</button>
+                <% }%>
+                <div id="knownDiv">
+                  <label class="col-lg-4 control-label" style="text-align: left; margin-top:40px;">Do you know the place shown in the photo? 
+                  <p style="color:red;">(the answer has no impact on the further tasks, just evaluate how familiar are you with this place)</p></label>
+                    <div class="col-lg-8">
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="known" id="known1" value="1" style="text-align: left;">
+                          Yes, I know where it is and I could easily find this place on a map.
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="known" id="known2" value="2" style="text-align: left;">
+                          I've seen this place and I probably could find it on a map. 
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="known" id="known3" value="3" style="text-align: left;">
+                          This place looks familiar to me, but I'm not sure if I can find it on a map.
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="known" id="known4" value="4" style="text-align: left;">
+                          No, I have no idea where it is. 
+                        </label>
+                      </div>
+                    </div>
+                </div>
+                <button id="saveKnown" type="button" class="btn btn-danger pull-right" onclick="setKnown();" disabled="disabled">Next</button>         
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <!-- Map placeholder -->
+          <div class="row">
+            <div class="col-lg-12">
+              <div id="map"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function demo() {
+        document.getElementById("demoClicked1").value = "ja"
+        document.getElementById("demoClicked2").value = "ja"
+      }
+      jQuery( "#known1" ).change(function() {
+        document.getElementById('knownModal').value = "1"
+        jQuery('#saveKnown').removeAttr('disabled');
+        jQuery('#saveKnown').prop('disabled', false);
+      });
+      jQuery( "#known2" ).change(function() {
+        document.getElementById('knownModal').value = "2"
+        jQuery('#saveKnown').removeAttr('disabled');
+        jQuery('#saveKnown').prop('disabled', false);
+      });
+      //G
+      jQuery( "#known3" ).change(function() {
+        document.getElementById('knownModal').value = "3"
+        jQuery('#saveKnown').removeAttr('disabled');
+        jQuery('#saveKnown').prop('disabled', false);
+      });
+      //G
+      jQuery( "#known4" ).change(function() {
+        document.getElementById('knownModal').value = "4"
+        jQuery('#saveKnown').removeAttr('disabled');
+        jQuery('#saveKnown').prop('disabled', false);
+      });
+
+      //Global variables
+      var buildingsSeen = false
+      var marker = false
+      var arrow = false
+      var vectorLayer
+      var vectorLayer2
+      var vectorLayer3
+      var vectorLayer4
+      var vectorLayer5
+      var vectorSource2 
+      var vectorSource3     
+      var modalCameraRotation = true
+      var currentIcon = ""
+      jQuery('#map').fadeTo(500,0.01)
+
+      function showBuildings(buildings2, properties, icon, rotation) {
+        jQuery('#next').attr('disabled', true)
+        buildingsSeen = true
+        var features = []
+        var buildings = JSON.parse(buildings2) 
+        for (x in buildings) {
+          if (typeof(buildings[x].geometry[0][0])!="number" && typeof(buildings[x].geometry[0][0])!="undefined") {
+            var feature = new ol.Feature({
+              name: buildings[x].id,
+              geometry: new ol.geom.Polygon(buildings[x].geometry)
+            })
+            features.push(feature) 
+          }                
+        }
+        var splitProp = properties.split(",")
+        var lat = Number(splitProp[0].slice(1, splitProp[0].length+1))
+        var lon = Number(splitProp[1].slice(0, splitProp[0].length))
+        var vectorSource4 = new ol.source.Vector({
+                features: features
+        })
+        var myStyle = new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: 'orange',
+            width: 3
+          }),
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 153, 0, 0.5)'
+          })
+        })
+        vectorLayer4 = new ol.layer.Vector({
+                source: vectorSource4,
+                style: myStyle
+        }) 
+        var newView2 = new ol.View({
+            center: ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857'),
+            zoom: 18,
+            rotation: Number(rotation)
+        })
+        map.addLayer(vectorLayer4)
+        map.setView(newView2)
+        map.render()  
+        markObjects()    
+        showMarker(JSON.stringify(properties), arrow, rotation)       
+      }
+      function setKnown(){
+        jQuery('#map').fadeTo(500,1);
+        document.getElementById("heading1").hidden = false;
+        document.getElementById("instructionWell").hidden = false;
+        jQuery("#next").css("visibility", "visible")
+        jQuery("#knownDiv").css("visibility", "hidden")
+        jQuery("#saveKnown").css("visibility", "hidden")
+      }
+      function markObjects() {
+        var mySelectInteraction = new ol.interaction.Select({
+          layers: [vectorLayer4]
+        })
+        mySelectInteraction.getFeatures().on('add', function(e) {
+          if (e.target.getArray().length==1) {
+            markObject(); 
+          } else {
+            jQuery.noConflict();
+            jQuery('#myImg').imgAreaSelect({remove:true});
+          }
+          var feature = e.element // Do something with the feature
+          var coordinates = feature.getGeometry().getCoordinates()
+        })
+        mySelectInteraction.getFeatures().on('remove', function(e) {
+          if (e.target.getArray().length==1) {        
+            markObject();             
+          } if (e.target.getArray().length==0) {
+            jQuery.noConflict();
+            jQuery('#myImg').imgAreaSelect({remove:true}); 
+          } 
+          var feature = e.element // Do something with the feature
+          var coordinates = feature.getGeometry().getCoordinates()         
+        })
+        map.addInteraction(mySelectInteraction) 
+      }
+
+      /* display uploaded image */
+      function preview(img, selection) {
+        jQuery.noConflict();
+        jQuery('#next').prop('disabled', false);
+        var width = img.width
+        var xy = selection.x1 + " " + selection.y1 + " " + selection.x2 + " " + selection.y2
+        document.getElementById("objectCoords1").value = xy;
+        document.getElementById("imageSize1").value = width;  
+        document.getElementById("objectCoords2").value = xy;
+        document.getElementById("imageSize2").value = width; 
+      }
+
+      // mark an object on image using bounding box
+      function markObject() {
+        document.getElementById("objectCoords1").value = "253 120 413 250"
+        document.getElementById("objectCoords2").value = "253 120 413 250"
+        jQuery.noConflict();
+        
+        jQuery('#myImg').imgAreaSelect({
+          x1: 253, y1: 120, x2: 413, y2: 250, 
+          handles: true,
+          onSelectEnd: preview
+        });
+      }
+      /* OpenLayers 3 */
+      //create satellite layer
+      var sourceBingMaps = new ol.source.BingMaps({
+        key: 'Ag4eQzHgpn-LvpD_4Mx6Vsx7TslsxykxKc_cGyf2HDZtQqmg5oZEeX4mmwVOGtyz',
+        imagerySet: 'Aerial',
+      })
+      // create an interactions and controls
+      var mouseZoom = new ol.interaction.MouseWheelZoom();
+      var pinch = new ol.interaction.PinchRotate()
+      var interaction = new ol.interaction.DragRotate({ condition: ol.events.condition.shiftKeyOnly });
+      var pan = new ol.interaction.DragPan();
+      var rotateControl = new ol.control.Rotate();
+      var zoomControl = new ol.control.Zoom();
+      var layerSwitcher = new ol.control.LayerSwitcher();
+      var myView = new ol.View({
+        center: ol.proj.transform([ 7.617449, 51.963416  ], 'EPSG:4326', 'EPSG:3857'),
+        zoom: 15
+      })
+      var map = new ol.Map({
+        target: 'map',
+        controls: [rotateControl, zoomControl, layerSwitcher],
+        layers: [
+          new ol.layer.Tile({
+            title: 'OSM',
+            type: 'base',
+            visible: true,
+            source: new ol.source.OSM()
+          }),
+          new ol.layer.Tile({
+            title: 'Satellite',
+            type: 'base',
+            visible: false,
+            source: sourceBingMaps
+          })
+        ],
+        view: myView,
+        interactions: [interaction, mouseZoom, pan, pinch ]
+      })
+
+      function defineCenter(bb) {
+        var x = (Number(bb[0])+Number(bb[2]))/2
+        var y = (Number(bb[1])+Number(bb[3]))/2 
+        var center = [ { x: x, y: y } ]
+        center = JSON.stringify(center)
+        return center
+      }
+
+      /* save current map rotation and proceed to the next image */
+      function submitImage(properties) {
+        document.getElementById('cID1').value = jQuery('#cID').text()
+        document.getElementById('cID2').value = jQuery('#cID').text()
+
+        if (map.getInteractions().getArray().length>4) {
+          var select = map.getInteractions().getArray()[4] 
+          console.log("Select: " + select.getKeys() + " " + select.length + " " + select[0])
+          var features = select.getFeatures();
+          var feature = features.item(0);
+          document.getElementById("objectCoordsMap1").value = defineCenter(feature.getGeometry().getExtent())
+          document.getElementById("objectCoordsMap2").value = defineCenter(feature.getGeometry().getExtent())
+          document.getElementById("markedObjectId1").value = feature.getProperties().name
+          document.getElementById("markedObjectId2").value = feature.getProperties().name
+          var selectedBuildings = [{ 
+                id:  feature.getProperties().name,
+                geometry: feature.getGeometry().getCoordinates() 
+          }]
+        }
+        var origin = new ol.geom.Point(ol.proj.transform([ properties[1], properties[0] ], 'EPSG:4326', 'EPSG:3857'))
+        document.getElementById("mapRotation1").value = map.getView().getRotation()
+        document.getElementById("mapRotation2").value = map.getView().getRotation()
+        document.getElementById("lat1").value = origin.getCoordinates()[0]
+        document.getElementById("lon1").value = origin.getCoordinates()[1]
+        document.getElementById("lat2").value = origin.getCoordinates()[0]
+        document.getElementById("lon2").value = origin.getCoordinates()[1]     
+        jQuery( "#nextForm" ).submit();
+      }
+
+      function submitImageAndModal(properties) {
+        document.getElementById('cID1').value = jQuery('#cID').text()
+        document.getElementById('cID2').value = jQuery('#cID').text()
+        if (map.getInteractions().getArray().length>4) {
+          var select = map.getInteractions().getArray()[4] 
+          console.log("Select: " + select.getKeys() + " " + select.length + " " + select[0])
+          var features = select.getFeatures();
+          var feature = features.item(0);
+          document.getElementById("objectCoordsMap1").value = defineCenter(feature.getGeometry().getExtent())
+          document.getElementById("objectCoordsMap2").value = defineCenter(feature.getGeometry().getExtent())
+          document.getElementById("markedObjectId1").value = feature.getProperties().name
+          document.getElementById("markedObjectId2").value = feature.getProperties().name
+          var selectedBuildings = [{ 
+                id:  feature.getProperties().name,
+                geometry: feature.getGeometry().getCoordinates() 
+          }]
+        }
+        document.getElementById("mapRotation1").value = map.getView().getRotation()
+        document.getElementById("mapRotation2").value = map.getView().getRotation()
+        var origin = new ol.geom.Point(ol.proj.transform([ properties[1], properties[0] ], 'EPSG:4326', 'EPSG:3857'))
+        document.getElementById("lat1").value = origin.getCoordinates()[0]
+        document.getElementById("lon1").value = origin.getCoordinates()[1]
+        document.getElementById("lat2").value = origin.getCoordinates()[0]
+        document.getElementById("lon2").value = origin.getCoordinates()[1]
+        jQuery.noConflict();
+        jQuery("#modal").modal("show");
+      }
+
+      //add marker
+      function showMarker(properties1, icon, rotation, fOv) { 
+        console.log("Show Marker fov " + fOv)
+            currentIcon  = icon
+            if (icon=="arrow") {
+              modalCameraRotation = false
+            }
+           
+          if (typeof(properties1)=="string") {
+            var splitProp = properties1.split(",")
+            var lat = Number(splitProp[0].slice(2, splitProp[0].length))
+            var lon = Number(splitProp[1].slice(0, splitProp[0].length-1))
+            var properties = [lat,lon]
+          } else {
+            var properties = properties1
+          }
+          var source = ""
+          var fov = Number(fOv)
+          
+          if (fov<35) {
+            source = "http://a-rommel.de/Marker28.png"
+          } else if (fov<48) {
+            source = "http://a-rommel.de/Marker40.png"
+          } else if (fov<55) {
+            source = "http://a-rommel.de/Marker50.png"
+          } else if (fov<65) {
+            source = "http://a-rommel.de/Marker63.png"
+          } else if (fov<75) {
+            source = "http://a-rommel.de/Marker72.png"
+          } else {
+            source = "http://a-rommel.de/marker3.png"
+          }
+
+          if (icon=="arrow" && vectorLayer!=undefined) {
+            
+            marker = true
+            arrow = true          
+            
+            var iconStyle = new ol.style.Style({
+              image: new ol.style.Icon( ({
+                anchor: [ 0.5, 400],
+                scale: 0.5,
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                src: source
+              }))
+            });
+            vectorLayer.setStyle(iconStyle)
+            console.log("1")
+            //map.render()
+          } else if (icon=="arrow") {
+            console.log("2")
+            marker = true
+            arrow = true
+            marker = true 
+          if (properties) {
+            var lat = properties[0]
+            var lon = properties[1]
+            var iconFeatures=[];
+            var iconFeature = new ol.Feature({
+              geometry: new ol.geom.Point(ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857')),
+
+            });
+            var testpoint = new ol.geom.Point(ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857'))
+            iconFeatures.push(iconFeature);
+            var vectorSource = new ol.source.Vector({
+              features: iconFeatures 
+            });
+            var iconStyle = new ol.style.Style({
+              image: new ol.style.Icon(({
+                anchor: [ 0.5, 400],
+                scale: 0.5,
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                src: source
+              }))
+            });
+            vectorLayer = new ol.layer.Vector({
+              source: vectorSource,
+              style: iconStyle
+            });
+            var newView = new ol.View({
+                  center: ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857'),
+                  zoom: 18,
+                  rotation: Number(rotation)
+            })
+            map.addLayer(vectorLayer)
+            map.setView(newView)
+          }
+          } 
+            else {
+            source = "http://a-rommel.de/Flag.png"
+            marker = true 
+          if (properties) {
+            var lat = properties[0]
+            var lon = properties[1]
+            var iconFeatures=[];
+            var iconFeature = new ol.Feature({
+              geometry: new ol.geom.Point(ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857')),
+              name: 'Muenster'
+            });
+            iconFeatures.push(iconFeature);
+            var vectorSource = new ol.source.Vector({
+              features: iconFeatures 
+            });
+            var iconStyle = new ol.style.Style({
+              image: new ol.style.Icon(({
+                anchor: [ 0.5, 200],
+                scale: 0.2,
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                src: source
+              }))
+            });
+            vectorLayer = new ol.layer.Vector({
+              source: vectorSource,
+              style: iconStyle,
+              name: "markerLayer"
+            });
+            var newView = new ol.View({
+                  center: ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857'),
+                  zoom: 17,
+                  rotation: Number(rotation)
+            })
+            var testpoint = new ol.geom.Point(ol.proj.transform([ lon, lat ], 'EPSG:4326', 'EPSG:3857'))
+            map.addLayer(vectorLayer)
+            map.setView(newView)
+          }
+          }   
+      }
+
+    </script>
+  </body>
+</html>
